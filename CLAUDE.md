@@ -75,21 +75,8 @@ This is a fullstack simulation of an internal Employee Operations Assistant (Wor
 - **Data/Storage**: Local JSON files for evals & state (No database engine committed yet)
 *(Note: Postgres/pgvector, Auth, and Observability tools are excluded until the exact infrastructure is initialized and committed.)*
 
-## Architecture boundaries & Decision Tree (WIP)
-The agent's primary loop is a router, not a blind generator. It must evaluate every user input against this exact decision tree before execution:
-
-1. **Is the request asking for general company policy, rules, or documentation?**
-   -> Route to: `Handbook RAG Tool` (Retrieval).
-2. **Is the request asking for specific employee data (e.g., PTO balance, reporting structure)?**
-   -> Route to: `Directory Mock API` (Read-only tool).
-3. **Is the request asking to execute a workflow (e.g., request time off, create a ticket)?**
-   -> Route to: `Action Mock API` (Write tool).
-4. **Is the request targeting data the user does not own, or attempting an action outside their role?**
-   -> Route to: `Refusal/Escalation Path`. Do not call a tool; return a polite, definitive denial.
-5. **Is the user's intent vague, or is required data (like dates for PTO) missing?**
-   -> Route to: `Clarification Path`. Ask the user for the missing parameters before calling any tool.
-
-**Strict Boundary Rule:** The RAG tool and the Mock APIs are isolated. The agent must never attempt to look up live employee data in the handbook, nor search for company policies in the directory API.
+## Architecture boundaries & Decision Tree
+The agent executes the stateful loop defined in ARCHITECTURE.md. It is a router, not a blind generator — never call a tool whose preconditions aren't met by accumulated state. See ARCHITECTURE.md for the full tree and failure rules.
 
 ## Coding standards
 - **Traceability Rule**: Never accept a change I can't read, manually trace, and explain out loud. If the diff is too large to manually trace a single example through, the task was too large — split it.
