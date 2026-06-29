@@ -28,3 +28,12 @@ The agent does not use a flat classifier. It executes a stateful loop where each
 *   **Decision:** Call Tool -> `Create_PTO_Request`.
 *   **Why it's allowed:** Pre-Write Gate explicitly unlocked by user confirmation.
 *   **The wrong move:** Re-running earlier checks or looping backwards.
+
+---
+
+### Cross-Cutting Boundary Rules
+
+**Global Tool Failure Handling**
+*   *Rule:* Any tool invocation (`Directory_API`, `Handbook_RAG`, `Create_PTO_Request`) may return a hard failure (e.g., 504 Timeout, 404 Not Found, 403 Forbidden).
+*   *Execution:* On hard failure, the agent must immediately halt the sequence, escalate to the user by surfacing the exact degradation, and offer a fallback action (e.g., opening an IT support ticket).
+*   *The wrong move:* Catching the error to silently proceed with hallucinated fallback data, assuming a default "safe" state, or entering an infinite, invisible retry loop.
