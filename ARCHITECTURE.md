@@ -9,6 +9,7 @@ The agent does not use a flat classifier. It executes a stateful loop where each
 
 **Turn 2: The Read Auth Gate & Balance Lookup**
 *   *Auth Gate Check:* Verify session User ID matches target ID. (Note: This establishes the write-authorization boundary for the entire loop).
+*   *Day 1 / Scaffolding Note:* The current implementation uses a global `auth_passed` boolean. This is insufficient for Eval #2 (Coworker Request). On Day 3, this gate must be upgraded to explicit Identity Matching (Session ID == Target ID) before the directory read can occur.
 *   **Decision:** Call Tool -> `Directory_API`.
 *   **Why it's allowed:** Dates gathered, Auth passed. Minimum state to query database is met.
 *   **The wrong move:** Moving to a write state before confirming the math.
