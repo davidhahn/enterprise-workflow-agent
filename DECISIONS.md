@@ -15,6 +15,6 @@
 -	The Win: The server strictly owns auth and balance flags; the client cannot forge them. The server alone holds the authority to determine "why it's allowed right now."
 -	The Tradeoff Accepted: We cannot use a purely stateless architecture where the client passes the whole truth in the payload. (Note: For Day 1, the endpoint will temporarily accept a mock state payload strictly to prove the turn logic, but the architectural trust boundary remains server-side. Persistence between turns is explicitly deferred to Day 2).
 
-5. Routing Mechanism: Forced Structured Output (Two-Step Pipeline)
--	The Win: Creates a hard, testable seam between the LLM's decision and the tool's execution. This directly supports the lab's core thesis by allowing us to evaluate the routing choice in isolation and enforce architectural gates before the action fires.
--	The Tradeoff Accepted: We are intentionally abandoning native LLM tool-calling. We give up the most idiomatic, market-relevant pattern—and the built-in conversational ergonomics that come with it—in exchange for total, manual control over the execution boundary.
+5. Routing Mechanism: Tool-Calling API for Extraction, Not Execution
+-	The Win: We get the reliability of Claude's native structured output (using the tools API to force a specific schema), but we maintain a hard Python seam between the decision and the action. This allows us to enforce architectural gates before the action fires and evaluate the routing choice in isolation.
+-	The Tradeoff Accepted: We are intentionally abandoning the autonomous agent loop where the LLM directly executes tools and feeds the results back to itself. We are taking on the burden of manually mapping the extracted intent to our Python execution paths and managing the state machine ourselves.
