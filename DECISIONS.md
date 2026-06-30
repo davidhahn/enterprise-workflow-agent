@@ -10,3 +10,11 @@
 - The Win: Generating embeddings locally proves I can handle the strict data privacy, zero-network-latency, and air-gapped deployment constraints that enterprise customers demand.
 - The Tradeoff Accepted: It introduces heavier backend complexity, a bigger Docker footprint, and the risk of yak-shaving dependency hell.
 - Execution Rule (Day 1 vs. Target): This is the target architecture. On Day 1, the RAG tool will strictly be a mocked JSON stub that returns a hardcoded string. `sentence-transformers` and the BGE model will not be installed or wired in until Day 3, when the RAG path is actively being built.
+
+4. State Trust Boundary: Server-Side Authority
+-	The Win: The server strictly owns auth and balance flags; the client cannot forge them. The server alone holds the authority to determine "why it's allowed right now."
+-	The Tradeoff Accepted: We cannot use a purely stateless architecture where the client passes the whole truth in the payload. (Note: For Day 1, the endpoint will temporarily accept a mock state payload strictly to prove the turn logic, but the architectural trust boundary remains server-side. Persistence between turns is explicitly deferred to Day 2).
+
+5. Routing Mechanism: Forced Structured Output (Two-Step Pipeline)
+-	The Win: Creates a hard, testable seam between the LLM's decision and the tool's execution. This directly supports the lab's core thesis by allowing us to evaluate the routing choice in isolation and enforce architectural gates before the action fires.
+-	The Tradeoff Accepted: We are intentionally abandoning native LLM tool-calling. We give up the most idiomatic, market-relevant pattern—and the built-in conversational ergonomics that come with it—in exchange for total, manual control over the execution boundary.
