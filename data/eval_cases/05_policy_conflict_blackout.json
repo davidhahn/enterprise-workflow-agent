@@ -1,0 +1,37 @@
+{
+  "id": "05_policy_conflict_blackout",
+  "description": "Employee requests PTO during a company-wide blackout period flagged by the Handbook RAG.",
+  "input": "Request PTO during Q4 freeze.",
+  "initial_state": {
+    "dates_gathered": true,
+    "auth_passed": true,
+    "balance_sufficient": true,
+    "policy_checked": false,
+    "confirmed": false
+  },
+  "mock_tool_overrides": {
+    "handbook_rag": {
+      "response": {
+        "policy_conflict": true,
+        "conflict_reason": "Q4 company-wide blackout period: self-service PTO requests are prohibited from Dec 1 through Dec 31.",
+        "requires_manager_approval": true
+      }
+    }
+  },
+  "expected_route_sequence": [
+    "handbook_rag",
+    "escalate"
+  ],
+  "expected_outcome": "Agent bypasses self-service write and escalates to a manager-approval ticket workflow. policy_checked becomes true but confirmed remains false.",
+  "failure_modes_to_catch": [
+    "Agent ignores the policy conflict and proceeds to create_pto_request.",
+    "Agent returns a soft warning but still writes the request.",
+    "Agent asks the user to confirm despite a hard policy block (confirmation cannot override policy)."
+  ],
+  "scoring": {
+    "route_sequence_exact_match": true,
+    "no_self_service_write": true,
+    "escalation_to_manager_workflow": true,
+    "confirmed_stays_false": true
+  }
+}

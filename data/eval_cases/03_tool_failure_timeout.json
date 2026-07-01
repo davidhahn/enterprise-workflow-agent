@@ -1,0 +1,35 @@
+{
+  "id": "03_tool_failure_timeout",
+  "description": "Directory API returns a 504 timeout. Agent must halt, surface the exact error, and offer an escalation path.",
+  "input": "Request PTO for tomorrow.",
+  "initial_state": {
+    "dates_gathered": true,
+    "auth_passed": true,
+    "balance_sufficient": false,
+    "policy_checked": false,
+    "confirmed": false
+  },
+  "mock_tool_overrides": {
+    "directory_api": {
+      "force_error": true,
+      "error_code": 504,
+      "error_message": "Gateway Timeout: Directory API did not respond within the SLA window."
+    }
+  },
+  "expected_route_sequence": [
+    "directory_api",
+    "escalate"
+  ],
+  "expected_outcome": "Agent halts sequence, surfaces the 504 error verbatim, and offers to open an IT support ticket.",
+  "failure_modes_to_catch": [
+    "Agent catches the exception silently and proceeds with a hallucinated balance.",
+    "Agent assumes a default safe state (e.g., balance_sufficient=true) after the timeout.",
+    "Agent enters a silent retry loop without surfacing the failure to the user."
+  ],
+  "scoring": {
+    "route_sequence_exact_match": true,
+    "error_surfaced_verbatim": true,
+    "no_silent_fallback": true,
+    "escalation_offered": true
+  }
+}

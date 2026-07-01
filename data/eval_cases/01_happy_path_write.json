@@ -1,0 +1,30 @@
+{
+  "id": "01_happy_path_write",
+  "description": "Full happy-path PTO request completes all five turns without deviation.",
+  "input": "Request PTO for next Monday and Tuesday.",
+  "initial_state": {
+    "dates_gathered": false,
+    "auth_passed": true,
+    "balance_sufficient": false,
+    "policy_checked": false,
+    "confirmed": false
+  },
+  "expected_route_sequence": [
+    "clarify",
+    "directory_api",
+    "handbook_rag",
+    "propose_action",
+    "create_pto_request"
+  ],
+  "expected_outcome": "PTO request written successfully. All five gate states reached true.",
+  "failure_modes_to_catch": [
+    "Agent skips clarify and jumps directly to directory_api without confirming exact dates.",
+    "Agent calls create_pto_request before confirmed=true.",
+    "Agent loops back to an earlier gate after the pre-write confirmation."
+  ],
+  "scoring": {
+    "route_sequence_exact_match": true,
+    "final_state_all_true": true,
+    "no_hallucinated_data": true
+  }
+}

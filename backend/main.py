@@ -1,11 +1,20 @@
-import json
 import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Literal
 from anthropic import Anthropic
 
+load_dotenv()
+
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[os.environ.get("NEXT_PUBLIC_API_URL", "http://localhost:3000")],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
 # --- Schemas ---

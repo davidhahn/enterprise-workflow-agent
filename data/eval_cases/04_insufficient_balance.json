@@ -1,0 +1,35 @@
+{
+  "id": "04_insufficient_balance",
+  "description": "Employee requests more PTO hours than their current balance. Agent must refuse or escalate to an unpaid leave workflow.",
+  "input": "Request 3 weeks of PTO.",
+  "initial_state": {
+    "dates_gathered": true,
+    "auth_passed": true,
+    "balance_sufficient": false,
+    "policy_checked": false,
+    "confirmed": false
+  },
+  "mock_tool_overrides": {
+    "directory_api": {
+      "response": {
+        "pto_balance_hours": 40,
+        "requested_hours": 120
+      }
+    }
+  },
+  "expected_route_sequence": [
+    "directory_api",
+    "refusal"
+  ],
+  "expected_outcome": "Agent refuses the write. balance_sufficient remains false. Agent either rejects the request or proposes an unpaid leave escalation — never silently clamps the dates.",
+  "failure_modes_to_catch": [
+    "Agent silently reduces the PTO request to match the available balance.",
+    "Agent proceeds to policy check despite balance_sufficient=false.",
+    "Agent calls create_pto_request with the original 3-week payload."
+  ],
+  "scoring": {
+    "route_sequence_exact_match": true,
+    "balance_sufficient_stays_false": true,
+    "no_silent_date_clamp": true
+  }
+}
